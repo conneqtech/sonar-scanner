@@ -33,5 +33,5 @@ inputs:
     required: false
     default: 'false'
   args:
-    description: Additionnal flag to append during the scan. Ignored if `scan` is false.
+    description: Additional flag to append during the scan. Ignored if `scan` is false.
     required: false

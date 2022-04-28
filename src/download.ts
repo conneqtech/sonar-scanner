@@ -7,13 +7,11 @@ import { MACOS_INSTALL_PATH, UBUNTU_INSTALL_PATH, WINDOWS_INSTALL_PATH } from '.
 import { isMacOS, isUbuntu, isWindows } from './utils';
 
 /**
- * Get the Sonar Scanner CLI download link.
- * The link depends of the requested version and if the installation requires the JRE.
+ * Get the suffix for the requested version
  */
-export function getDownloadLink(): string {
+export function getSuffix(): string {
   const version = core.getInput('version');
   const withJre = core.getInput('with-jre').toLowerCase() === 'true';
-  const base = 'https://binaries.sonarsource.com/Distribution/sonar-scanner-cli';
   let suffix = '';
 
   if (withJre) {
@@ -26,7 +24,17 @@ export function getDownloadLink(): string {
     }
   }
 
-  return `${base}/sonar-scanner-cli-${version}${suffix}.zip`;
+  return `${version}${suffix}`;
+}
+
+/**
+ * Get the Sonar Scanner CLI download link.
+ * The link depends of the requested version and if the installation requires the JRE.
+ */
+export function getDownloadLink(): string {
+  const base = 'https://binaries.sonarsource.com/Distribution/sonar-scanner-cli';
+
+  return `${base}/sonar-scanner-cli-${getSuffix()}.zip`;
 }
 
 /**
@@ -50,7 +58,7 @@ export async function download(): Promise<void> {
   const downloadPath = await tc.downloadTool(downloadLink);
   const targetPath = getSonarScannerDirectory();
   const extractionPath = resolve(targetPath, '..');
-  const extractedPath = `${extractionPath}/sonar-scanner-${core.getInput('version')}`;
+  const extractedPath = `${extractionPath}/sonar-scanner-${getSuffix()}`;
 
   if (!downloadLink.endsWith('.zip')) {
     // Should never be reached
